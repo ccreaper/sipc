@@ -28,9 +28,7 @@
   },
   "homepage": "https://github.com/ccreaper/sipc#readme",
   "devDependencies": {
+    "electron": ">=14.x.x",
     "typescript": "^4.6.3"
-  },
-  "dependencies": {
-    "electron": "^18.0.1"
   }
 }
