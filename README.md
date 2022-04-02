@@ -1,2 +1,19 @@
-# sipc
-In-house interprocess communication module for Electron originally developed for @synllc. Now open source.
+# SIPC
+`sipc` (Simple Inter-Process Communication) is a renderer-to-main interprocess communication library originally written in-house for [@synllc](https://github.com/synllc) and is principally geared towards Electron. It leverages TypeScript's intelligent code completion facilities to provide a predictable interface for developer-defined communications. I ported it to its own open-source package on April 2nd, 2022 alongside a number of other [Hollywood](https://github.com/synllc/hw) constituents as to separate more global concerns engineered by me from the specific commercial purpose of Hollywood and facilitate the development of Hollywood-inspired projects that will use some (but not all) of its features.
+
+Even though the library is usable from JavaScript, the entirety of the convenience provided by the package rests exclusively on the TypeScript autocompletion facilities offered in modern IDEs. Unless I expand the library to make it more useful and less Hollywood-oriented, there is nothing much to gain from using SIPC than any other IPC library for Electron if you write JavaScript. I do plan on extending the library in the future however.
+
+# Usage Instructions
+You can install `sipc` using `npm i sipc` and import the relevent classes using the following import.
+```ts
+import { SipcServer, SipcClient, SipcLibrary, SipcDispatcher } from 'sipc';
+```
+`sipc` implements a parser-interpretable abstraction between Electron's IPC library and your own functionality. Both `SipcServer` and `SipcClient` are generics that accept any class extended from `SipcLibrary`, the latter of which being an object providing function signatures for named library methods.
+
+`SipcServer<T>` intakes a name for the IPC channel and a symbol dispatch table modeled upon `T` (_or a dynamic invoker extended from `SipcDispatcher`_) as its sole constructor parameters. It automatically hooks onto Electron's IPC facilities to open communication and awaits for connections to the supplied IPC channel name. The class exposes the `listen` and `deafen` methods, both of which can be used to mark `WebContents` objects as subject to the created server. The server also exposes the public field `library` to allow the server to access and invoke its own library functions, since the SipcServer class is meant to be a _wrapped_ library instead of simply an IPC extension for an already-existing one.
+
+`SipcClient<T>` also intakes a name for the IPC channel, but also requires an object mapping the method names to `allow` or `deny` strings. Since the `SipcServer` instance is also meant to be used by the server to invoke its own supplied library, some functions defined in the library could be cut off from the client, which you can do programatically by setting the method name field to `deny` in the supplied object. This also serves a dual purpose: to actually provide the method names to the client, since interface reflection isn't a native TypeScript feature and existing key transformers do not work on generics.
+
+`SipcDispatcher` serves as a replacement for symbol dispatch tables for servers that do not have static library functions but rather creates them dynamically. It's a mapping function which returns an appropriate library function for the provided symbol name. This is especially useful for projects such as Hollywood which uses `sipc` to provide safe IPC coms to a main-hosted FFI library. Anywhere a symbol dispatch table is accepted, a `SipcDispatcher` will also be accepted, unless the operation is specifically to transform symbol dispatch tables.
+
+The pattern used in Hollywood is creating an interface derived from `SipcLibrary` in a shared file that gets imported from both the main process and the renderer process. Both `SipcClient` and `SipcServer` intake the shared library template as a generic, which means that a change to your IPC-using library (`SipcLibrary`) in your project will be reported to both main and renderer concerns, and existing files will report a compilation error in the case of breaking function signatures changes or removal, which is very useful to Electron develoeprs having to maintain a versatile and accessible IPC layer.

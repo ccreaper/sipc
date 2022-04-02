@@ -1,0 +1,36 @@
+{
+  "name": "sipc",
+  "version": "1.0.0",
+  "description": "In-house interprocess communication module for Electron",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ccreaper/sipc.git"
+  },
+  "keywords": [
+    "ipc",
+    "interprocess",
+    "ts",
+    "typescript",
+    "electron"
+  ],
+  "author": "ccreaper",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ccreaper/sipc/issues"
+  },
+  "homepage": "https://github.com/ccreaper/sipc#readme",
+  "devDependencies": {
+    "typescript": "^4.6.3"
+  },
+  "dependencies": {
+    "electron": "^18.0.1"
+  }
+}
